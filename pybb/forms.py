@@ -326,7 +326,7 @@ try:
     class EditProfileForm(forms.ModelForm):
         class Meta(object):
             model = util.get_pybb_profile_model()
-            fields = ['signature', 'time_zone', 'language', 'show_signatures', 'avatar']
+            fields = ['signature', 'timezone', 'language', 'show_signatures', 'avatar']
 
         def __init__(self, *args, **kwargs):
             super(EditProfileForm, self).__init__(*args, **kwargs)

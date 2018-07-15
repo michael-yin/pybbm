@@ -2,9 +2,15 @@
 
 from __future__ import unicode_literals
 
+from re import compile
+
 import django
+from django.urls import reverse
 from django.utils import translation
+from django.utils.http import urlencode, is_safe_url
+from django.http import HttpResponseRedirect
 from django.db.models import ObjectDoesNotExist
+
 from pybb import util
 from pybb.compat import is_authenticated
 
@@ -13,6 +19,23 @@ if django.VERSION < (1, 10):  # pragma: no cover
 else:  # pragma: no cover
     from django.utils.deprecation import MiddlewareMixin
     MiddlewareParentClass = MiddlewareMixin
+
+
+CHECK_URLS = [compile('forum'.lstrip('/'))]
+
+
+class ForumPermissionMiddleware(MiddlewareParentClass):
+    """
+    Make sure forum only accessible to specific group
+    """
+    def process_request(self, request):
+        if not request.user.is_authenticated:
+            path = request.path_info.lstrip('/')
+            if any(m.match(path) for m in CHECK_URLS):
+                base_url = reverse('account_login')
+                base_url = '{}?next={}'.format(
+                    base_url, request.path)
+                return HttpResponseRedirect(base_url)
 
 
 class PybbMiddleware(MiddlewareParentClass):

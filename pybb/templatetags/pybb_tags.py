@@ -14,7 +14,7 @@ from django.utils.encoding import smart_text
 from django.utils.html import escape
 from django.utils.translation import ugettext as _, ungettext
 from django.utils import dateformat
-from django.utils.timezone import timedelta
+from django.utils.timezone import timedelta, get_current_timezone
 from django.utils.timezone import now as tznow
 
 from pybb.compat import is_authenticated, is_anonymous
@@ -55,32 +55,8 @@ class PybbTimeNode(template.Node):
 
 
 def pybb_user_time(context_time, user):
-    delta = tznow() - context_time
-    today = tznow().replace(hour=0, minute=0, second=0)
-    yesterday = today - timedelta(days=1)
-    tomorrow = today + timedelta(days=1)
-
-    if delta.days == 0:
-        if delta.seconds < 60:
-            msg = ungettext('%d second ago', '%d seconds ago', delta.seconds)
-            return msg % delta.seconds
-        elif delta.seconds < 3600:
-            minutes = int(delta.seconds / 60)
-            msg = ungettext('%d minute ago', '%d minutes ago', minutes)
-            return msg % minutes
-    if is_authenticated(user):
-        if time.daylight: # pragma: no cover
-            tz1 = time.altzone
-        else: # pragma: no cover
-            tz1 = time.timezone
-        tz = tz1 + util.get_pybb_profile(user).time_zone * 60 * 60
-        context_time = context_time + timedelta(seconds=tz)
-    if today < context_time < tomorrow:
-        return _('today, %s') % context_time.strftime('%H:%M')
-    elif yesterday < context_time < today:
-        return _('yesterday, %s') % context_time.strftime('%H:%M')
-    else:
-        return dateformat.format(context_time, 'd M, Y H:i')
+    local = context_time.astimezone(get_current_timezone())
+    return dateformat.format(local, 'd M, Y H:i')
 
 
 @register.simple_tag
