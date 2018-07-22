@@ -1,15 +1,16 @@
 {% load i18n %}
 
 {% if is_paginated %}
-    <div class="pagination">
-        <ul>
-            <li class="prev {% if not page_obj.has_previous %}disabled{% endif %}">
-                <a href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% endif %}">← {% trans 'previous page' %}</a>
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+            <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+              <a class="page-link" href="#" tabindex="-1">Previous</a>
             </li>
+
             {% for page in page_obj.pages %}
                 {% if page %}
-                    <li {% ifequal page page_obj.number %}class="disabled"{% endifequal %}>
-                       <a href="?{{ page.querystring }}" class="page">{{ page }}</a>
+                    <li class="page-item {% ifequal page page_obj.number %}active{% endifequal %}">
+                       <a href="?{{ page.querystring }}" class="page-link">{{ page }}</a>
                     </li>
                 {% else %}
                     <li class="disabled">
@@ -17,9 +18,12 @@
                     </li>
                 {% endif %}
             {% endfor %}
-            <li class="next {% if not page_obj.has_next %}disabled{% endif %}">
-                <a href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% endif %}" >{% trans 'next page' %} →</a>
+
+            <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+              <a class="page-link" href="#" tabindex="-1">Next</a>
             </li>
-        </ul>
-    </div>
+
+      </ul>
+    </nav>
 {% endif %}
+

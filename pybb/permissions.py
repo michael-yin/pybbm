@@ -264,7 +264,7 @@ class DefaultPermissionHandler(object):
         return True if `user` may add poll to posts, False otherwise.
         By default always True
         """
-        return True
+        return False
 
     def may_edit_topic_slug(self, user):
         """

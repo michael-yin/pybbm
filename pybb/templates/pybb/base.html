@@ -1,6 +1,6 @@
 {% extends PYBB_TEMPLATE|default:"base.html" %}
 
-{% load i18n pybb_tags %}
+{% load i18n pybb_tags static %}
 
 {% block title %}{{ PYBB_DEFAULT_TITLE }}{% endblock title %}
 
@@ -16,4 +16,15 @@
 {% endblock %}
 
 {% block content %}{% endblock content %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'markitup/skins/simple/style.css' %}" />
+<link rel="stylesheet" href="{% static 'markitup/sets/bbcode/style.css' %}" />
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'markitup/jquery.markitup.js' %}"></script>
+  <script src="{% static 'markitup/sets/bbcode/set.js' %}"></script>
+  <script src="{% static 'pybb/js/markitup.js' %}"></script>
+{% endblock %}
 
