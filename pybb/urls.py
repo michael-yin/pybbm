@@ -12,7 +12,7 @@ from pybb.views import IndexView, CategoryView, ForumView, TopicView, \
     OpenTopicView, ModeratePost, TopicPollVoteView, LatestTopicsView, \
     UserTopics, UserPosts, topic_cancel_poll_vote, block_user, unblock_user, \
     delete_subscription, add_subscription, post_ajax_preview, \
-    mark_all_as_read, ForumSubscriptionView, UserEditPrivilegesView
+    mark_all_as_read, ForumSubscriptionView, UserEditPrivilegesView, search_forum
 
 app_name = 'pybbm'
 
@@ -25,11 +25,13 @@ urlpatterns = [
 urlpatterns += [
     # Index, Category, Forum
     url('^$', IndexView.as_view(), name='index'),
+    url('^search/$', search_forum, name='search'),
+
     url('^category/(?P<pk>\d+)/$', CategoryView.as_view(), name='category'),
     url('^forum/(?P<pk>\d+)/$', ForumView.as_view(), name='forum'),
 
     # User
-    url('^users/(?P<username>[^/]+)/$', UserView.as_view(), name='user'),
+    # url('^users/(?P<username>[^/]+)/$', UserView.as_view(), name='user'),
     url('^block_user/([^/]+)/$', block_user, name='block_user'),
     url('^unblock_user/([^/]+)/$', unblock_user, name='unblock_user'),
     url(r'^users/(?P<username>[^/]+)/topics/$', UserTopics.as_view(),
@@ -40,7 +42,7 @@ urlpatterns += [
         UserEditPrivilegesView.as_view(), name='edit_privileges'),
 
     # Profile
-    url('^profile/edit/$', ProfileEditView.as_view(), name='edit_profile'),
+    # url('^profile/edit/$', ProfileEditView.as_view(), name='edit_profile'),
 
     # Topic
     url('^topic/(?P<pk>\d+)/$', TopicView.as_view(), name='topic'),

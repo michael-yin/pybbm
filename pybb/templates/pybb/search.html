@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% load wagtailcore_tags bootstrap4 %}
+
+{% block title %}Search{% endblock %}
+
+{% block body_class %}template-searchresults{% endblock %}
+
+{% block content %}
+    <h1>Search</h1>
+
+    {# Display django.contrib.messages as Bootstrap alerts #}
+    {% bootstrap_messages %}
+
+    <form action="{% url 'search' %}" method="get" class="form-inline">
+        <div class="form-group mx-sm-3 mb-2">
+            <input class="form-control" type="text" name="query"{% if forum_search_query %} value="{{ forum_search_query }}"{% endif %} required>
+        </div>
+        <button class="btn btn-primary mb-2" type="submit">Search</button>
+    </form>
+
+    {% if search_results %}
+        <h4>Found {{ search_results|length }} result{{ search_results|length|pluralize }} matching "{{ forum_search_query }}":</h4>
+        <ul>
+            {% for result in search_results %}
+                <li>
+                    <h4><a href="{% url 'pybb:post' result.pk%}">{{ result.topic.name }}</a></h4>
+                    {{ result.body_html }}
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if search_results.has_previous %}
+            <a href="{% url 'search' %}?query={{ forum_search_query|urlencode }}&amp;page={{ search_results.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        {% if search_results.has_next %}
+            <a href="{% url 'search' %}?query={{ forum_search_query|urlencode }}&amp;page={{ search_results.next_page_number }}">Next</a>
+        {% endif %}
+    {% elif forum_search_query %}
+        <p class="text-danger">No results found for "{{ forum_search_query }}".</p>
+    {% else %}
+        <p>Please type something into the search box.</p>
+    {% endif %}
+{% endblock %}

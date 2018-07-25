@@ -60,5 +60,6 @@ class PybbMiddleware(MiddlewareParentClass):
                 profile.save()
 
             request.session['django_language'] = profile.language
-            translation.activate(profile.language)
+            # translation.activate(profile.language)
+            translation.activate('en')
             request.LANGUAGE_CODE = translation.get_language()

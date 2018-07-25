@@ -15,6 +15,7 @@ from django.db.models import F
 from django.forms.utils import ErrorList
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest,\
     HttpResponseForbidden
+from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext as _
 from django.utils.decorators import method_decorator
@@ -80,6 +81,32 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         return perms.filter_categories(self.request.user, Category.objects.all())
+
+
+def search_forum(request):
+    forum_search_query = request.GET.get('forum_search_query', None)
+    page = request.GET.get('page', 1)
+
+    if forum_search_query:
+        # TODO: cache support
+        search_results = Post.objects.filter(
+            body_text__search=forum_search_query)
+    else:
+        search_results = Post.objects.none()
+
+    paginator = Paginator(search_results, 10)
+    try:
+        search_results = paginator.page(page)
+    except PageNotAnInteger:
+        search_results = paginator.page(1)
+    except EmptyPage:
+        search_results = paginator.page(paginator.num_pages)
+
+    # Render template
+    return render(request, 'pybb/search.html', {
+        'forum_search_query': forum_search_query,
+        'search_results': search_results,
+    })
 
 
 class CategoryView(RedirectToLoginMixin, generic.DetailView):
@@ -224,6 +251,7 @@ class ForumSubscriptionView(RedirectToLoginMixin, generic.FormView):
             )
         except ForumSubscription.DoesNotExist:
             self.forum_subscription = None
+
 
 class LatestTopicsView(PaginatorMixin, generic.ListView):
 
