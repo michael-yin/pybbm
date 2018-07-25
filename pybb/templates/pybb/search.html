@@ -25,7 +25,7 @@
             {% for result in search_results %}
                 <li>
                     <h4><a href="{% url 'pybb:post' result.pk%}">{{ result.topic.name }}</a></h4>
-                    {{ result.body_html }}
+                    {{ result.body_html|striptags|truncatewords_html:70 }}
                 </li>
             {% endfor %}
         </ul>
