@@ -11,6 +11,7 @@ try:
 except ImportError:
     from django.urls import reverse
 from django.contrib import messages
+from django.contrib.postgres.search import SearchVector
 from django.db.models import F
 from django.forms.utils import ErrorList
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest,\
@@ -89,10 +90,13 @@ def search_forum(request):
 
     if forum_search_query:
         # TODO: cache support
-        search_results = Post.objects.filter(
-            body_text__search=forum_search_query)
+        ids = Topic.objects.annotate(
+            search=SearchVector('name', 'posts__body_text'),
+            ).filter(search=forum_search_query).values_list(
+            "id", flat=True).distinct()
+        search_results = Topic.objects.filter(id__in=ids)
     else:
-        search_results = Post.objects.none()
+        search_results = Topic.objects.none()
 
     paginator = Paginator(search_results, 10)
     try:
